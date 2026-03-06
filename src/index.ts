@@ -1,5 +1,4 @@
 import { calculate2026Taxes, TaxProfile } from './taxEngine';
-
 export default {
   async fetch(request: Request): Promise<Response> {
     // Handle CORS for your SaaS frontend
