@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gemtax | 1099 Sidekick</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>body { font-family: 'Inter', sans-serif; }</style>
+</head>
+<body class="bg-slate-50 text-slate-900 min-h-screen">
+    <nav class="p-6 bg-white border-b border-slate-200">
+        <div class="max-w-4xl mx-auto flex justify-between items-center">
+            <h1 class="text-2xl font-bold text-indigo-600">Gemtax <span class="text-slate-400 font-light">2026</span></h1>
+            <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-medium">API Connected</span>
+        </div>
+    </nav>
+
+    <main class="max-w-4xl mx-auto p-6 grid md:grid-cols-2 gap-8 mt-10">
+        <section class="bg-white p-8 rounded-2xl shadow-sm border border-slate-200">
+            <h2 class="text-xl font-semibold mb-6">Income Calculator</h2>
+            
+            <div class="space-y-6">
+                <div>
+                    <label class="block text-sm font-medium text-slate-600 mb-2">Annual W2 Wages</label>
+                    <input type="number" id="w2" value="50000" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none transition">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-600 mb-2">Net 1099 Profit</label>
+                    <input type="number" id="1099" value="25000" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none transition">
+                </div>
+                <button onclick="calculate()" class="w-full bg-indigo-600 text-white font-bold py-4 rounded-xl hover:bg-indigo-700 transition transform hover:scale-[1.02]">
+                    Calculate Taxes
+                </button>
+            </div>
+        </section>
+
+        <section id="results" class="bg-indigo-900 text-white p-8 rounded-2xl shadow-xl flex flex-col justify-center">
+            <p class="text-indigo-300 uppercase tracking-widest text-xs font-bold mb-2">Estimated Total Tax</p>
+            <div id="totalTax" class="text-5xl font-extrabold mb-6">$0</div>
+            
+            <div class="space-y-4 border-t border-indigo-800 pt-6">
+                <div class="flex justify-between">
+                    <span class="text-indigo-300">Self-Employment Tax</span>
+                    <span id="seTax" class="font-semibold">$0</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-indigo-300">Federal Income Tax</span>
+                    <span id="fedTax" class="font-semibold">$0</span>
+                </div>
+                <div class="bg-indigo-800/50 p-4 rounded-lg mt-4">
+                    <div class="flex justify-between items-center text-sm">
+                        <span>Take Home Pay</span>
+                        <span id="takeHome" class="text-xl font-bold text-green-400">$0</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        async function calculate() {
+            const w2 = parseFloat(document.getElementById('w2').value);
+            const n1099 = parseFloat(document.getElementById('1099').value);
+            
+            const response = await fetch('https://gemtax-project.infomomtelo.workers.dev/calculate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ w2Income: w2, net1099Income: n1099, filingStatus: 'single' })
+            });
+            
+            const data = await response.json();
+            
+            document.getElementById('totalTax').innerText = '$' + (data.summary.selfEmploymentTax + data.summary.federalIncomeTax).toLocaleString();
+            document.getElementById('seTax').innerText = '$' + data.summary.selfEmploymentTax.toLocaleString();
+            document.getElementById('fedTax').innerText = '$' + data.summary.federalIncomeTax.toLocaleString();
+            document.getElementById('takeHome').innerText = '$' + data.summary.totalIncome.toLocaleString(); // You can refine this math
+        }
+        // Run once on load
+        calculate();
+    </script>
+</body>
+</html>
