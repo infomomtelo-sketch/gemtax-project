@@ -6,7 +6,7 @@ compatibility_date = "2026-03-06"
 ENVIRONMENT = "production"
 
 # Future D1 Database setup
-# [[d1_databases]]
-# binding = "DB"
-# database_name = "gemtax_db"
-# database_id = "YOUR_D1_DATABASE_ID"
+[[d1_databases]]
+binding = "DB" # This is how we access the DB in our code
+database_name = "gemtax_db"
+database_id = "00000000-0000-0000-0000-000000000000" # Cloudflare will assign this later
