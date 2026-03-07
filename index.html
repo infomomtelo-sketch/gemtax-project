@@ -19,7 +19,20 @@
             </div>
         </div>
     </nav>
-
+<div id="q-alert" class="max-w-5xl mx-auto px-6 mt-4">
+    <div class="bg-white border border-slate-200 p-5 rounded-2xl flex justify-between items-center shadow-sm">
+        <div class="flex items-center gap-4">
+            <div id="day-badge" class="bg-indigo-600 text-white text-xs font-black px-3 py-2 rounded-lg">
+                <span id="days-count">0</span> DAYS LEFT
+            </div>
+            <div>
+                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Q1 Estimated Tax Due</p>
+                <p id="q1-total" class="text-xl font-black text-slate-800">$0</p>
+            </div>
+        </div>
+        <a href="https://www.irs.gov/payments" target="_blank" class="text-xs font-bold text-indigo-600 hover:underline">PAY IRS.GOV →</a>
+    </div>
+</div>    
     <main class="max-w-5xl mx-auto p-6 mt-6">
         <div class="grid md:grid-cols-2 gap-8">
             <section class="bg-white p-8 rounded-3xl shadow-sm border border-slate-200">
@@ -100,67 +113,115 @@
     </div>
 </section>       
     </main>
+<script>
+    const API_URL = 'https://gemtax-project.infomomtelo.workers.dev';
+    let myChart; // Variable to store the chart instance
 
-    <script>
-        const API_URL = 'https://gemtax-project.infomomtelo.workers.dev';
+    // 1. Initial Load
+    async function init() {
+        await loadHistory();
+        await loadQuarterly();
+    }
 
-        async function calculateAndSave() {
-            const w2 = parseFloat(document.getElementById('w2').value) || 0;
-            const n1099 = parseFloat(document.getElementById('1099').value) || 0;
-            
-            const response = await fetch(`${API_URL}/calculate`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ 
-                    w2Income: w2, 
-                    net1099Income: n1099, 
-                    filingStatus: 'single',
-                    email: 'user@example.com' // You can customize this
-                })
-            });
-            
-            const data = await response.json();
-            updateUI(data, w2, n1099);
-            loadHistory(); // Refresh table after saving
+    // 2. Main Action: Calculate, Save to D1, and Update UI
+    async function calculateAndSave() {
+        const w2 = parseFloat(document.getElementById('w2').value) || 0;
+        const n1099 = parseFloat(document.getElementById('1099').value) || 0;
+        
+        const response = await fetch(`${API_URL}/calculate`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+                w2Income: w2, 
+                net1099Income: n1099, 
+                filingStatus: 'single',
+                email: 'user@example.com' 
+            })
+        });
+        
+        const data = await response.json();
+        updateUI(data, w2, n1099);
+        await loadHistory(); 
+        await loadQuarterly(); // Refresh the top banner
+    }
+
+    // 3. Update Visuals (Numbers & Chart)
+    function updateUI(data, w2, n1099) {
+        const seTax = data.summary.selfEmploymentTax;
+        const fedTax = data.summary.federalIncomeTax;
+        const totalTax = seTax + fedTax;
+        const takeHome = (w2 + n1099) - totalTax;
+
+        document.getElementById('totalTax').innerText = '$' + totalTax.toLocaleString();
+        document.getElementById('seTax').innerText = '$' + seTax.toLocaleString();
+        document.getElementById('fedTax').innerText = '$' + fedTax.toLocaleString();
+        document.getElementById('takeHome').innerText = '$' + takeHome.toLocaleString();
+
+        updateChart(seTax, fedTax, takeHome);
+    }
+
+    // 4. Chart.js Logic
+    function updateChart(seTax, fedTax, takeHome) {
+        const ctx = document.getElementById('taxChart').getContext('2d');
+        if (myChart) { myChart.destroy(); } // Remove old chart before drawing new one
+
+        myChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['SE Tax', 'Federal Tax', 'Take Home'],
+                datasets: [{
+                    data: [seTax, fedTax, takeHome],
+                    backgroundColor: ['#6366f1', '#4338ca', '#22c55e'],
+                    borderWidth: 0,
+                }]
+            },
+            options: {
+                plugins: { legend: { display: false } },
+                cutout: '75%'
+            }
+        });
+    }
+
+    // 5. Load History from D1
+    async function loadHistory() {
+        const res = await fetch(`${API_URL}/history`);
+        const items = await res.json();
+        const body = document.getElementById('historyBody');
+        body.innerHTML = items.map(item => `
+            <tr class="hover:bg-slate-50 transition-colors">
+                <td class="px-6 py-4 text-slate-400 text-xs">${new Date(item.created_at).toLocaleDateString()}</td>
+                <td class="px-6 py-4 font-medium">$${item.w2_income.toLocaleString()}</td>
+                <td class="px-6 py-4 font-medium text-indigo-600">$${item.net_1099_income.toLocaleString()}</td>
+                <td class="px-6 py-4 text-right font-bold">$${item.tax_owed.toLocaleString()}</td>
+            </tr>
+        `).join('');
+    }
+
+    // 6. Load Quarterly Summary & Countdown
+    async function loadQuarterly() {
+        const res = await fetch(`${API_URL}/quarterly-summary`);
+        const data = await res.json();
+        
+        document.getElementById('q1-total').innerText = '$' + (data.totalQ1Tax || 0).toLocaleString();
+        document.getElementById('days-count').innerText = data.daysLeft;
+
+        if (data.daysLeft <= 14) {
+            document.getElementById('day-badge').classList.replace('bg-indigo-600', 'bg-red-500');
         }
+    }
 
-        function updateUI(data, w2, n1099) {
-            const total = data.summary.selfEmploymentTax + data.summary.federalIncomeTax;
-            const takeHome = (w2 + n1099) - total;
+    function downloadPDF() {
+        const element = document.getElementById('pdf-area');
+        const opt = {
+            margin: 0.5,
+            filename: 'Gemtax-2026-Report.pdf',
+            html2canvas: { scale: 3 },
+            jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+        };
+        html2pdf().set(opt).from(element).save();
+    }
 
-            document.getElementById('totalTax').innerText = '$' + total.toLocaleString();
-            document.getElementById('seTax').innerText = '$' + data.summary.selfEmploymentTax.toLocaleString();
-            document.getElementById('fedTax').innerText = '$' + data.summary.federalIncomeTax.toLocaleString();
-            document.getElementById('takeHome').innerText = '$' + takeHome.toLocaleString();
-        }
-
-        async function loadHistory() {
-            const res = await fetch(`${API_URL}/history`);
-            const items = await res.json();
-            const body = document.getElementById('historyBody');
-            body.innerHTML = items.map(item => `
-                <tr class="hover:bg-slate-50 transition-colors">
-                    <td class="px-6 py-4 text-slate-400 text-xs">${new Date(item.created_at).toLocaleDateString()}</td>
-                    <td class="px-6 py-4 font-medium">$${item.w2_income.toLocaleString()}</td>
-                    <td class="px-6 py-4 font-medium text-indigo-600">$${item.net_1099_income.toLocaleString()}</td>
-                    <td class="px-6 py-4 text-right font-bold">$${item.tax_owed.toLocaleString()}</td>
-                </tr>
-            `).join('');
-        }
-
-        function downloadPDF() {
-            const element = document.getElementById('pdf-area');
-            const opt = {
-                margin: 0.5,
-                filename: 'Gemtax-2026-Report.pdf',
-                html2canvas: { scale: 3 },
-                jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
-            };
-            html2pdf().set(opt).from(element).save();
-        }
-
-        // Initial Load
-        loadHistory();
-    </script>
+    init(); // Start the app
+</script>   
 </body>
 </html>
