@@ -240,7 +240,16 @@
             } catch(e) { console.log("Summary fetch failed"); }
         }
 
-        function downloadPDF() {
+        const deductionTips = {
+    "Creative": ["Adobe Suite", "Camera Gear", "Studio Rent", "Stock Photos"],
+    "Tech": ["Server Costs", "Home Internet %", "Hardware", "Learning Courses"],
+    "Services": ["Mileage", "Uniforms/Branded Gear", "Insurance", "Client Meals"]
+};
+
+function suggestDeductions(industry) {
+    const list = deductionTips[industry] || [];
+    return `💡 Pro Tip: Don't forget to claim your ${list.join(', ')}!`;
+}        function downloadPDF() {
             const element = document.getElementById('pdf-area');
             const opt = {
                 margin: 0.5,
@@ -251,6 +260,11 @@
             html2pdf().set(opt).from(element).save();
         }
 
+        const deductionTips = {
+    "Creative": ["Section 179 Gear", "Studio Rent", "Marketing Ads", "Software Subs"],
+    "Tech": ["Hardware Depreciation", "Google Workspace", "Cloud Hosting", "Conferences"],
+    "Services": ["Standard Mileage", "Liability Insurance", "Business Phone", "Meals (50%)"]
+};        
         init();
     </script>
 </body>
