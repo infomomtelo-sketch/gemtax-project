@@ -9,4 +9,7 @@ ENVIRONMENT = "production"
 [[d1_databases]]
 binding = "DB" # This is how we access the DB in our code
 database_name = "gemtax_db"
-database_id = "00000000-0000-0000-0000-000000000000" # Cloudflare will assign this later
+database_id = "14327a7f-75c7-47ac-8b95-fba7a83f1d23" # Cloudflare will assign this later
+[[routes]]
+pattern = "income.gemtaxes.com"
+custom_domain = true
