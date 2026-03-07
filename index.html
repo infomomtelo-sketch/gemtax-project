@@ -114,10 +114,9 @@
 </section>       
     </main>
 <script>
-    const API_URL = 'https://gemtax-project.infomomtelo.workers.dev';
+const API_URL = 'https://api.gemtax.com';    
     let myChart; // Variable to store the chart instance
-
-    // 1. Initial Load
+     // 1. Initial Load
     async function init() {
         await loadHistory();
         await loadQuarterly();
@@ -128,21 +127,26 @@
         const w2 = parseFloat(document.getElementById('w2').value) || 0;
         const n1099 = parseFloat(document.getElementById('1099').value) || 0;
         
-        const response = await fetch(`${API_URL}/calculate`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ 
-                w2Income: w2, 
-                net1099Income: n1099, 
-                filingStatus: 'single',
-                email: 'user@example.com' 
-            })
-        });
-        
-        const data = await response.json();
-        updateUI(data, w2, n1099);
-        await loadHistory(); 
-        await loadQuarterly(); // Refresh the top banner
+        try {
+            const response = await fetch(`${API_URL}/calculate`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    w2Income: w2, 
+                    net1099Income: n1099, 
+                    filingStatus: 'single', // You can add a dropdown for this later
+                    email: 'user@example.com' 
+                })
+            });
+            
+            const data = await response.json();
+            updateUI(data, w2, n1099);
+            await loadHistory(); 
+            await loadQuarterly();
+        } catch (error) {
+            console.error("Calculation failed:", error);
+            alert("Check your Custom Domain status in Cloudflare!");
+        }
     }
 
     // 3. Update Visuals (Numbers & Chart)
@@ -163,7 +167,7 @@
     // 4. Chart.js Logic
     function updateChart(seTax, fedTax, takeHome) {
         const ctx = document.getElementById('taxChart').getContext('2d');
-        if (myChart) { myChart.destroy(); } // Remove old chart before drawing new one
+        if (myChart) { myChart.destroy(); }
 
         myChart = new Chart(ctx, {
             type: 'doughnut',
@@ -197,17 +201,12 @@
         `).join('');
     }
 
-    // 6. Load Quarterly Summary & Countdown
+    // 6. Load Quarterly Summary
     async function loadQuarterly() {
         const res = await fetch(`${API_URL}/quarterly-summary`);
         const data = await res.json();
-        
         document.getElementById('q1-total').innerText = '$' + (data.totalQ1Tax || 0).toLocaleString();
         document.getElementById('days-count').innerText = data.daysLeft;
-
-        if (data.daysLeft <= 14) {
-            document.getElementById('day-badge').classList.replace('bg-indigo-600', 'bg-red-500');
-        }
     }
 
     function downloadPDF() {
@@ -221,7 +220,7 @@
         html2pdf().set(opt).from(element).save();
     }
 
-    init(); // Start the app
-</script>   
+    init();
+</script>
 </body>
 </html>
