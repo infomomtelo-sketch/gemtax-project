@@ -5,11 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gemtax | 1099 Sidekick</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <style>body { font-family: 'Inter', sans-serif; }</style>
 </head>
 <body class="bg-slate-50 text-slate-900 min-h-screen pb-20">
+
     <nav class="p-6 bg-white border-b border-slate-200 sticky top-0 z-50">
         <div class="max-w-5xl mx-auto flex justify-between items-center">
             <h1 class="text-2xl font-bold text-indigo-600 tracking-tight">Gemtax <span class="text-slate-400 font-light underline decoration-indigo-200">2026</span></h1>
@@ -19,22 +21,25 @@
             </div>
         </div>
     </nav>
-<div id="q-alert" class="max-w-5xl mx-auto px-6 mt-4">
-    <div class="bg-white border border-slate-200 p-5 rounded-2xl flex justify-between items-center shadow-sm">
-        <div class="flex items-center gap-4">
-            <div id="day-badge" class="bg-indigo-600 text-white text-xs font-black px-3 py-2 rounded-lg">
-                <span id="days-count">0</span> DAYS LEFT
+
+    <div id="q-alert" class="max-w-5xl mx-auto px-6 mt-4">
+        <div class="bg-white border border-slate-200 p-5 rounded-2xl flex justify-between items-center shadow-sm">
+            <div class="flex items-center gap-4">
+                <div id="day-badge" class="bg-indigo-600 text-white text-xs font-black px-3 py-2 rounded-lg">
+                    <span id="days-count">0</span> DAYS LEFT
+                </div>
+                <div>
+                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Q1 Estimated Tax Due</p>
+                    <p id="q1-total" class="text-xl font-black text-slate-800">$0</p>
+                </div>
             </div>
-            <div>
-                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Q1 Estimated Tax Due</p>
-                <p id="q1-total" class="text-xl font-black text-slate-800">$0</p>
-            </div>
+            <a href="https://www.irs.gov/payments" target="_blank" class="text-xs font-bold text-indigo-600 hover:underline">PAY IRS.GOV →</a>
         </div>
-        <a href="https://www.irs.gov/payments" target="_blank" class="text-xs font-bold text-indigo-600 hover:underline">PAY IRS.GOV →</a>
     </div>
-</div>    
+
     <main class="max-w-5xl mx-auto p-6 mt-6">
         <div class="grid md:grid-cols-2 gap-8">
+            
             <section class="bg-white p-8 rounded-3xl shadow-sm border border-slate-200">
                 <h2 class="text-xl font-bold mb-6 text-slate-800">Income Details</h2>
                 <div class="space-y-6">
@@ -53,8 +58,8 @@
             </section>
 
             <div id="pdf-area">
-                <section class="bg-indigo-900 text-white p-8 rounded-3xl shadow-2xl h-full flex flex-col border border-indigo-800">
-                    <div class="flex justify-between items-start mb-8">
+                <section class="bg-indigo-900 text-white p-8 rounded-3xl shadow-2xl h-full flex flex-col border border-indigo-800 relative overflow-hidden">
+                    <div class="flex justify-between items-start mb-8 z-10">
                         <div>
                             <p class="text-indigo-300 uppercase tracking-widest text-[10px] font-bold mb-1">Total Estimated Tax</p>
                             <div id="totalTax" class="text-5xl font-black tracking-tighter">$0</div>
@@ -64,7 +69,7 @@
                         </button>
                     </div>
                     
-                    <div class="space-y-4 border-t border-indigo-800/50 pt-6 flex-grow">
+                    <div class="space-y-4 border-t border-indigo-800/50 pt-6 flex-grow z-10">
                         <div class="flex justify-between text-sm">
                             <span class="text-indigo-300">Self-Employment (15.3%)</span>
                             <span id="seTax" class="font-bold">$0</span>
@@ -73,154 +78,180 @@
                             <span class="text-indigo-300">Federal Income Tax</span>
                             <span id="fedTax" class="font-bold">$0</span>
                         </div>
+                        
                         <div class="mt-6 bg-white/5 p-6 rounded-2xl border border-white/10">
                             <div class="flex justify-between items-center">
                                 <span class="text-xs uppercase font-bold text-indigo-200 tracking-widest">Post-Tax Income</span>
                                 <span id="takeHome" class="text-3xl font-black text-green-400 tracking-tight">$0</span>
+                            </div>
+                            <div id="milestone-note" class="text-center font-bold text-green-400 mt-4 px-4 py-2 rounded-xl bg-white/10 border border-green-400/30 hidden text-xs">
                             </div>
                         </div>
                     </div>
                 </section>
             </div>
         </div>
-        <div class="grid md:grid-cols-1 gap-6 mb-8">
-    <div class="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm flex flex-col items-center justify-center">
-        <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4">Tax Breakdown Visualization</h3>
-        <div class="w-full max-w-[280px]">
-            <canvas id="taxChart"></canvas>
+
+        <div class="grid md:grid-cols-1 gap-6 my-8">
+            <div class="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm flex flex-col items-center justify-center">
+                <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4">Tax Breakdown Visualization</h3>
+                <div class="w-full max-w-[280px]">
+                    <canvas id="taxChart"></canvas>
+                </div>
+            </div>
         </div>
-    </div>
-</div>
 
-<section class="bg-white rounded-3xl border border-slate-200 overflow-hidden shadow-sm">
-    <div class="p-6 border-b border-slate-100 flex justify-between items-center">
-        <h3 class="font-bold text-slate-800 tracking-tight">Recent Calculations</h3>
-        <span class="text-[10px] bg-slate-100 px-2 py-1 rounded font-bold text-slate-500 uppercase">Live Logs</span>
-    </div>
-    <div class="overflow-x-auto">
-        <table class="w-full text-left border-collapse">
-            <thead class="bg-slate-50 text-[10px] uppercase font-bold text-slate-400 tracking-widest">
-                <tr>
-                    <th class="px-6 py-4 italic">Date</th>
-                    <th class="px-6 py-4 border-l border-slate-100">W2 Income</th>
-                    <th class="px-6 py-4 border-l border-slate-100">1099 Profit</th>
-                    <th class="px-6 py-4 text-right border-l border-slate-100">Tax Est.</th>
-                </tr>
-            </thead>
-            <tbody id="historyBody" class="text-sm divide-y divide-slate-50">
-                </tbody>
-        </table>
-    </div>
-</section>       
+        <section class="bg-white rounded-3xl border border-slate-200 overflow-hidden shadow-sm">
+            <div class="p-6 border-b border-slate-100 flex justify-between items-center">
+                <h3 class="font-bold text-slate-800 tracking-tight">Recent Calculations</h3>
+                <span class="text-[10px] bg-slate-100 px-2 py-1 rounded font-bold text-slate-500 uppercase tracking-widest">Live Logs</span>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead class="bg-slate-50 text-[10px] uppercase font-bold text-slate-400 tracking-widest">
+                        <tr>
+                            <th class="px-6 py-4 italic">Date</th>
+                            <th class="px-6 py-4 border-l border-slate-100">W2 Income</th>
+                            <th class="px-6 py-4 border-l border-slate-100">1099 Profit</th>
+                            <th class="px-6 py-4 text-right border-l border-slate-100">Tax Est.</th>
+                        </tr>
+                    </thead>
+                    <tbody id="historyBody" class="text-sm divide-y divide-slate-50">
+                        </tbody>
+                </table>
+            </div>
+        </section>
     </main>
-<script>
-const API_URL = 'https://api.gemtax.com';    
-    let myChart; // Variable to store the chart instance
-     // 1. Initial Load
-    async function init() {
-        await loadHistory();
-        await loadQuarterly();
-    }
 
-    // 2. Main Action: Calculate, Save to D1, and Update UI
-    async function calculateAndSave() {
-        const w2 = parseFloat(document.getElementById('w2').value) || 0;
-        const n1099 = parseFloat(document.getElementById('1099').value) || 0;
-        
-        try {
-            const response = await fetch(`${API_URL}/calculate`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ 
-                    w2Income: w2, 
-                    net1099Income: n1099, 
-                    filingStatus: 'single', // You can add a dropdown for this later
-                    email: 'user@example.com' 
-                })
-            });
-            
-            const data = await response.json();
-            updateUI(data, w2, n1099);
-            await loadHistory(); 
+    <script>
+        // UPDATE: Your custom API URL
+        const API_URL = 'https://income.gemtaxes.com'; 
+        let myChart; 
+
+        async function init() {
+            await loadHistory();
             await loadQuarterly();
-        } catch (error) {
-            console.error("Calculation failed:", error);
-            alert("Check your Custom Domain status in Cloudflare!");
         }
-    }
 
-    // 3. Update Visuals (Numbers & Chart)
-    function updateUI(data, w2, n1099) {
-        const seTax = data.summary.selfEmploymentTax;
-        const fedTax = data.summary.federalIncomeTax;
-        const totalTax = seTax + fedTax;
-        const takeHome = (w2 + n1099) - totalTax;
-
-        document.getElementById('totalTax').innerText = '$' + totalTax.toLocaleString();
-        document.getElementById('seTax').innerText = '$' + seTax.toLocaleString();
-        document.getElementById('fedTax').innerText = '$' + fedTax.toLocaleString();
-        document.getElementById('takeHome').innerText = '$' + takeHome.toLocaleString();
-
-        updateChart(seTax, fedTax, takeHome);
-    }
-
-    // 4. Chart.js Logic
-    function updateChart(seTax, fedTax, takeHome) {
-        const ctx = document.getElementById('taxChart').getContext('2d');
-        if (myChart) { myChart.destroy(); }
-
-        myChart = new Chart(ctx, {
-            type: 'doughnut',
-            data: {
-                labels: ['SE Tax', 'Federal Tax', 'Take Home'],
-                datasets: [{
-                    data: [seTax, fedTax, takeHome],
-                    backgroundColor: ['#6366f1', '#4338ca', '#22c55e'],
-                    borderWidth: 0,
-                }]
-            },
-            options: {
-                plugins: { legend: { display: false } },
-                cutout: '75%'
+        async function calculateAndSave() {
+            const w2 = parseFloat(document.getElementById('w2').value) || 0;
+            const n1099 = parseFloat(document.getElementById('1099').value) || 0;
+            
+            try {
+                const response = await fetch(`${API_URL}/calculate`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        w2Income: w2, 
+                        net1099Income: n1099, 
+                        filingStatus: 'single',
+                        email: 'user@example.com' 
+                    })
+                });
+                
+                const data = await response.json();
+                
+                // Logic check for Milestone
+                updateMilestone(w2 + n1099);
+                
+                updateUI(data, w2, n1099);
+                await loadHistory(); 
+                await loadQuarterly();
+            } catch (error) {
+                console.error("Connection failed:", error);
+                alert("Ensure your Worker at " + API_URL + " is active!");
             }
-        });
-    }
+        }
 
-    // 5. Load History from D1
-    async function loadHistory() {
-        const res = await fetch(`${API_URL}/history`);
-        const items = await res.json();
-        const body = document.getElementById('historyBody');
-        body.innerHTML = items.map(item => `
-            <tr class="hover:bg-slate-50 transition-colors">
-                <td class="px-6 py-4 text-slate-400 text-xs">${new Date(item.created_at).toLocaleDateString()}</td>
-                <td class="px-6 py-4 font-medium">$${item.w2_income.toLocaleString()}</td>
-                <td class="px-6 py-4 font-medium text-indigo-600">$${item.net_1099_income.toLocaleString()}</td>
-                <td class="px-6 py-4 text-right font-bold">$${item.tax_owed.toLocaleString()}</td>
-            </tr>
-        `).join('');
-    }
+        function updateUI(data, w2, n1099) {
+            const seTax = data.summary.selfEmploymentTax;
+            const fedTax = data.summary.federalIncomeTax;
+            const totalTax = seTax + fedTax;
+            const takeHome = (w2 + n1099) - totalTax;
 
-    // 6. Load Quarterly Summary
-    async function loadQuarterly() {
-        const res = await fetch(`${API_URL}/quarterly-summary`);
-        const data = await res.json();
-        document.getElementById('q1-total').innerText = '$' + (data.totalQ1Tax || 0).toLocaleString();
-        document.getElementById('days-count').innerText = data.daysLeft;
-    }
+            document.getElementById('totalTax').innerText = '$' + totalTax.toLocaleString();
+            document.getElementById('seTax').innerText = '$' + seTax.toLocaleString();
+            document.getElementById('fedTax').innerText = '$' + fedTax.toLocaleString();
+            document.getElementById('takeHome').innerText = '$' + takeHome.toLocaleString();
 
-    function downloadPDF() {
-        const element = document.getElementById('pdf-area');
-        const opt = {
-            margin: 0.5,
-            filename: 'Gemtax-2026-Report.pdf',
-            html2canvas: { scale: 3 },
-            jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
-        };
-        html2pdf().set(opt).from(element).save();
-    }
+            updateChart(seTax, fedTax, takeHome);
+        }
 
-    init();
-</script>
+        function updateChart(seTax, fedTax, takeHome) {
+            const ctx = document.getElementById('taxChart').getContext('2d');
+            if (myChart) { myChart.destroy(); }
+            myChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['SE Tax', 'Federal Tax', 'Take Home'],
+                    datasets: [{
+                        data: [seTax, fedTax, takeHome],
+                        backgroundColor: ['#6366f1', '#4338ca', '#22c55e'],
+                        borderWidth: 0,
+                    }]
+                },
+                options: {
+                    plugins: { legend: { display: false } },
+                    cutout: '75%'
+                }
+            });
+        }
+
+        function updateMilestone(totalIncome) {
+            const cap = 184500; // 2026 SS Cap
+            const noteElement = document.getElementById('milestone-note');
+            
+            if (totalIncome > cap) {
+                const excess = totalIncome - cap;
+                const savings = (excess * 0.062).toLocaleString(undefined, {minimumFractionDigits: 2});
+                noteElement.innerText = `🎉 Milestone Hit! You've saved $${savings} in Social Security taxes so far.`;
+                noteElement.classList.remove('hidden');
+            } else {
+                noteElement.classList.add('hidden');
+            }
+        }
+
+        async function loadHistory() {
+            try {
+                const res = await fetch(`${API_URL}/history`);
+                const items = await res.json();
+                const body = document.getElementById('historyBody');
+                body.innerHTML = items.map(item => `
+                    <tr class="hover:bg-slate-50 transition-colors">
+                        <td class="px-6 py-4 text-slate-400 text-xs">${new Date(item.created_at).toLocaleDateString()}</td>
+                        <td class="px-6 py-4 font-medium">$${item.w2_income.toLocaleString()}</td>
+                        <td class="px-6 py-4 font-medium text-indigo-600">$${item.net_1099_income.toLocaleString()}</td>
+                        <td class="px-6 py-4 text-right font-bold">$${item.tax_owed.toLocaleString()}</td>
+                    </tr>
+                `).join('');
+            } catch(e) { console.log("History fetch failed"); }
+        }
+
+        async function loadQuarterly() {
+            try {
+                const res = await fetch(`${API_URL}/quarterly-summary`);
+                const data = await res.json();
+                document.getElementById('q1-total').innerText = '$' + (data.totalQ1Tax || 0).toLocaleString();
+                document.getElementById('days-count').innerText = data.daysLeft || 0;
+                
+                if (data.daysLeft <= 14) {
+                    document.getElementById('day-badge').classList.replace('bg-indigo-600', 'bg-red-500');
+                }
+            } catch(e) { console.log("Summary fetch failed"); }
+        }
+
+        function downloadPDF() {
+            const element = document.getElementById('pdf-area');
+            const opt = {
+                margin: 0.5,
+                filename: 'Gemtax-2026-Report.pdf',
+                html2canvas: { scale: 3 },
+                jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+            };
+            html2pdf().set(opt).from(element).save();
+        }
+
+        init();
+    </script>
 </body>
 </html>
