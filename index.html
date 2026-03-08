@@ -3,221 +3,164 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gemtax | 2026 1099 Sidekick</title>
+    <title>Gemtax | 2026 AI Accountant</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-    
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; scroll-behavior: smooth; }
         .rover-active { outline: 3px solid #6366f1; outline-offset: 4px; border-radius: 1rem; transition: all 0.3s ease; }
-        details > summary { list-style: none; }
-        details > summary::-webkit-details-marker { display: none; }
+        .fade-in { animation: fadeIn 0.5s ease-in; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-900 min-h-screen pb-10">
-
-    <div id="ai-rover" class="fixed z-[110] bg-indigo-600 text-white p-5 rounded-2xl shadow-2xl transition-all duration-500 ease-in-out hidden pointer-events-none max-w-xs border border-white/20">
-        <div class="flex items-center gap-2 mb-2">
-            <div class="w-6 h-6 bg-white/20 rounded-full flex items-center justify-center text-[10px] font-bold">AI</div>
-            <span class="text-[10px] font-bold uppercase tracking-widest opacity-80">2026 Guide</span>
-        </div>
-        <p id="rover-text" class="text-xs font-medium leading-relaxed"></p>
-        <div class="absolute -bottom-2 left-6 w-4 h-4 bg-indigo-600 rotate-45"></div>
-    </div>
+<body class="bg-slate-50 text-slate-900 min-h-screen pb-20">
 
     <nav class="p-6 bg-white border-b border-slate-200 sticky top-0 z-50">
         <div class="max-w-5xl mx-auto flex justify-between items-center">
             <h1 class="text-2xl font-extrabold text-indigo-600 tracking-tight">Gemtax <span class="text-slate-400 font-light underline decoration-indigo-200">2026</span></h1>
             <div class="flex items-center gap-4">
-                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">D1 Memory Active</span>
+                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">AI ACTIVE</span>
                 <div class="h-2 w-2 rounded-full bg-green-500 animate-pulse"></div>
             </div>
         </div>
     </nav>
 
-    <div class="max-w-5xl mx-auto px-6 mt-4">
-        <div id="q-alert" class="bg-white border border-slate-200 p-5 rounded-3xl flex flex-col md:flex-row justify-between items-center shadow-sm gap-4">
-            <div class="flex items-center gap-4">
-                <div id="day-badge" class="bg-indigo-600 text-white text-xs font-black px-4 py-2 rounded-xl">
-                    <span id="days-count">0</span> DAYS LEFT
-                </div>
+    <div class="max-w-3xl mx-auto px-6 mt-10">
+        <div id="interview-card" class="bg-white p-10 rounded-[2.5rem] shadow-2xl border border-slate-200">
+            <div class="flex items-center gap-3 mb-8">
+                <div class="w-12 h-12 bg-indigo-600 rounded-full flex items-center justify-center text-white font-bold shadow-lg">AI</div>
                 <div>
-                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Q1 Estimated Tax Due</p>
-                    <p id="q1-total" class="text-xl font-black text-slate-800">$0</p>
+                    <p class="text-xs font-bold text-indigo-600 uppercase tracking-widest leading-none">Your Accountant</p>
+                    <p class="text-[10px] text-slate-400 uppercase tracking-tighter mt-1">2026 Tax Interview</p>
                 </div>
             </div>
-            
-            <div class="flex gap-2 w-full md:w-auto">
-                <a id="irs-setup-btn" href="https://www.irs.gov/payments/your-online-account" target="_blank" class="flex-1 md:flex-none text-center text-[10px] font-bold px-5 py-3 border border-slate-200 rounded-xl hover:bg-slate-50 transition uppercase tracking-wider">
-                    1. Create IRS Account
-                </a>
-                <a id="pay-now-btn" href="https://www.irs.gov/payments/direct-pay" target="_blank" onclick="celebratePayment()" class="flex-1 md:flex-none text-center text-[10px] font-bold bg-indigo-600 text-white px-5 py-3 rounded-xl hover:bg-indigo-700 transition uppercase tracking-wider shadow-lg shadow-indigo-100">
-                    2. Pay Now
-                </a>
+
+            <div id="chat-box" class="min-h-[100px] mb-8">
+                <h2 id="question-text" class="text-2xl font-bold text-slate-800 leading-tight italic">"Hey! Ready to optimize your 2026 taxes? To start, what's your full legal name?"</h2>
+            </div>
+
+            <div id="input-area" class="space-y-4">
+                <input type="text" id="user-response" placeholder="Type here..." autofocus
+                       class="w-full p-5 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:ring-2 focus:ring-indigo-500 font-medium text-lg transition-all">
+                <button onclick="handleInterview()" class="w-full bg-indigo-600 text-white font-bold py-5 rounded-2xl hover:bg-indigo-700 shadow-xl shadow-indigo-100 transition-all active:scale-95 text-lg">
+                    Continue →
+                </button>
             </div>
         </div>
     </div>
 
-    <main class="max-w-5xl mx-auto p-6 mt-6">
+    <main id="main-dashboard" class="max-w-5xl mx-auto p-6 mt-12 space-y-12 hidden fade-in">
+        
+        <div id="q-alert" class="bg-white border border-slate-200 p-6 rounded-3xl flex flex-col md:flex-row justify-between items-center shadow-sm gap-4">
+            <div class="flex items-center gap-4">
+                <div class="bg-indigo-600 text-white text-[10px] font-black px-4 py-2 rounded-xl">Q1 STATUS: READY</div>
+                <div>
+                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Q1 Estimated Due</p>
+                    <p id="q1-total" class="text-xl font-black text-slate-800">$0.00</p>
+                </div>
+            </div>
+            <div class="flex gap-2">
+                <a href="https://www.irs.gov/payments/direct-pay" target="_blank" onclick="celebratePayment()" class="text-[10px] font-bold bg-indigo-600 text-white px-6 py-3 rounded-xl hover:bg-indigo-700 transition uppercase tracking-widest">Pay IRS.gov</a>
+            </div>
+        </div>
+
         <div class="grid md:grid-cols-2 gap-8">
-            
-            <section class="bg-white p-8 rounded-3xl shadow-sm border border-slate-200">
-                <h2 class="text-xl font-bold mb-6 text-slate-800 tracking-tight">Tax Maximizer</h2>
+            <section class="bg-white p-8 rounded-[2rem] shadow-sm border border-slate-200">
+                <h2 class="text-xl font-bold mb-6 text-slate-800">Verified Data</h2>
                 <div class="space-y-6">
-                    <div id="w2-group">
-                        <label class="block text-[10px] font-bold text-slate-400 uppercase mb-2 tracking-widest">Annual W2 Salary</label>
-                        <input type="number" id="w2" value="65000" class="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-indigo-500 outline-none font-semibold text-lg transition-all">
+                    <div>
+                        <label class="block text-[10px] font-bold text-slate-400 uppercase mb-2 tracking-widest">W2 Salary</label>
+                        <input type="number" id="w2" class="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl font-bold text-lg">
                     </div>
-                    <div id="1099-group">
-                        <label class="block text-[10px] font-bold text-slate-400 uppercase mb-2 tracking-widest">Expected 1099 Profit</label>
-                        <input type="number" id="1099" value="35000" class="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-indigo-500 outline-none font-semibold text-lg text-indigo-600 transition-all">
+                    <div>
+                        <label class="block text-[10px] font-bold text-slate-400 uppercase mb-2 tracking-widest">1099 Profit (Schedule C)</label>
+                        <input type="number" id="1099" class="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl font-bold text-lg text-indigo-600">
                     </div>
-                    <button onclick="calculateAndSave()" class="w-full bg-indigo-600 text-white font-bold py-5 rounded-2xl hover:bg-indigo-700 shadow-xl shadow-indigo-100 transition-all active:scale-95">
-                        Update & Save Strategy
-                    </button>
                 </div>
             </section>
 
             <div id="pdf-area">
-                <section class="bg-indigo-900 text-white p-8 rounded-3xl shadow-2xl h-full flex flex-col border border-indigo-800 relative overflow-hidden">
-                    <div class="flex justify-between items-start mb-8 z-10">
-                        <div>
-                            <p class="text-indigo-300 uppercase tracking-widest text-[10px] font-bold mb-1">Total 2026 Estimated Tax</p>
-                            <div id="totalTax" class="text-5xl font-black tracking-tighter">$0</div>
-                        </div>
-                        <button onclick="downloadPDF()" class="p-3 bg-white/10 rounded-xl hover:bg-white/20 transition">
-                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-                        </button>
-                    </div>
+                <section class="bg-indigo-900 text-white p-8 rounded-[2.5rem] shadow-2xl h-full flex flex-col border border-indigo-800 relative">
+                    <p class="text-indigo-300 uppercase tracking-widest text-[10px] font-bold mb-2">Total 2026 Tax Estimate</p>
+                    <div id="totalTax" class="text-5xl font-black tracking-tighter mb-8">$0.00</div>
                     
-                    <div class="space-y-4 border-t border-indigo-800/50 pt-6 flex-grow z-10">
-                        <div class="flex justify-between text-sm">
-                            <span class="text-indigo-300">Self-Employment (15.3%)</span>
-                            <span id="seTax" class="font-bold">$0</span>
-                        </div>
-                        <div class="flex justify-between text-sm">
-                            <span class="text-indigo-300">Federal Income Tax</span>
-                            <span id="fedTax" class="font-bold">$0</span>
-                        </div>
-                        
-                        <div class="mt-6 bg-white/5 p-6 rounded-2xl border border-white/10">
-                            <div class="flex justify-between items-center">
-                                <span class="text-[10px] uppercase font-bold text-indigo-200 tracking-widest">True Take-Home Pay</span>
-                                <span id="takeHome" class="text-3xl font-black text-green-400 tracking-tight">$0</span>
-                            </div>
-                            <div id="milestone-note" class="text-center font-bold text-green-400 mt-4 px-4 py-2 rounded-xl bg-white/10 border border-green-400/30 hidden text-[10px] uppercase tracking-widest">
-                            </div>
+                    <div class="space-y-4 border-t border-indigo-800/50 pt-6">
+                        <div class="flex justify-between text-xs"><span class="text-indigo-300 italic">Self-Employment Tax</span><span id="seTax">$0</span></div>
+                        <div class="flex justify-between text-xs"><span class="text-indigo-300 italic">Federal Income Tax</span><span id="fedTax">$0</span></div>
+                        <div class="mt-6 bg-white/5 p-6 rounded-2xl border border-white/10 flex justify-between items-center">
+                            <span class="text-[10px] font-bold text-indigo-200 uppercase tracking-widest">Take-Home Pay</span>
+                            <span id="takeHome" class="text-2xl font-black text-green-400">$0</span>
                         </div>
                     </div>
                 </section>
             </div>
         </div>
-
-        <div class="my-8 bg-white p-8 rounded-3xl border border-slate-200 shadow-sm flex flex-col items-center">
-            <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-6">Strategy Breakdown</h3>
-            <div class="w-full max-w-[260px]">
-                <canvas id="taxChart"></canvas>
-            </div>
-        </div>
-
-        <section class="bg-white rounded-3xl border border-slate-200 overflow-hidden shadow-sm">
-            <div class="p-6 border-b border-slate-100 flex justify-between items-center">
-                <h3 class="font-bold text-slate-800 tracking-tight">Recent Strategy Logs</h3>
-                <span class="text-[10px] bg-slate-100 px-2 py-1 rounded font-bold text-slate-500 uppercase tracking-widest">Live Sync</span>
-            </div>
-            <div class="overflow-x-auto">
-                <table class="w-full text-left border-collapse">
-                    <thead class="bg-slate-50 text-[10px] uppercase font-bold text-slate-400 tracking-widest">
-                        <tr>
-                            <th class="px-6 py-4 italic">Date</th>
-                            <th class="px-6 py-4 border-l border-slate-100">W2 Basis</th>
-                            <th class="px-6 py-4 border-l border-slate-100">1099 Profit</th>
-                            <th class="px-6 py-4 text-right border-l border-slate-100">Tax Est.</th>
-                        </tr>
-                    </thead>
-                    <tbody id="historyBody" class="text-sm divide-y divide-slate-50"></tbody>
-                </table>
-            </div>
-        </section>
-
-        <section id="legal-center" class="mt-12 grid md:grid-cols-3 gap-8">
-            <div class="md:col-span-2 bg-white p-8 rounded-3xl border border-slate-200 shadow-sm">
-                <h3 class="text-lg font-bold text-slate-800 mb-6 flex items-center gap-2">
-                    <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
-                    1099 Learning Center
-                </h3>
-                <div class="space-y-6">
-                    <details class="group border-b border-slate-100 pb-4">
-                        <summary class="font-bold text-sm text-slate-700 cursor-pointer flex justify-between items-center">
-                            What is the "Safe Harbor" rule for 2026?
-                            <span class="group-open:rotate-180 transition-transform">↓</span>
-                        </summary>
-                        <p class="mt-3 text-xs text-slate-500 leading-relaxed">
-                            To avoid penalties, you must pay at least 90% of your current year tax or 100% of last year's tax. Gemtax helps you track this threshold!
-                        </p>
-                    </details>
-                    <details class="group border-b border-slate-100 pb-4">
-                        <summary class="font-bold text-sm text-slate-700 cursor-pointer flex justify-between items-center">
-                            Can I deduct my ChatGPT or AI subscriptions?
-                            <span class="group-open:rotate-180 transition-transform">↓</span>
-                        </summary>
-                        <p class="mt-3 text-xs text-slate-500 leading-relaxed">
-                            Yes! If used for your 1099 work, they are considered "Ordinary and Necessary" business expenses under the 2026 tax code.
-                        </p>
-                    </details>
-                </div>
-            </div>
-
-            <div class="bg-slate-900 text-white p-8 rounded-3xl shadow-xl">
-                <h3 class="text-[10px] font-black uppercase tracking-widest text-indigo-400 mb-6">Legal Desk</h3>
-                <ul class="space-y-4">
-                    <li>
-                        <a href="#" class="text-xs font-bold hover:text-indigo-300 transition block">Terms of Service</a>
-                        <p class="text-[9px] text-slate-400 mt-1 uppercase tracking-tight">Estimation tool only. Not CPA advice.</p>
-                    </li>
-                    <li>
-                        <a href="#" class="text-xs font-bold hover:text-indigo-300 transition block">Privacy Policy</a>
-                        <p class="text-[9px] text-slate-400 mt-1 uppercase tracking-tight">D1 Encrypted calculations.</p>
-                    </li>
-                    <li class="pt-6 border-t border-slate-800">
-                        <p class="text-[9px] text-slate-500 leading-tight">
-                            &copy; 2026 Gemtax. All calculations are based on 2026 IRS tax brackets. Always consult a professional.
-                        </p>
-                    </li>
-                </ul>
-            </div>
-        </section>
     </main>
-
-    <footer class="max-w-5xl mx-auto px-6 py-12 text-center">
-        <p class="text-[10px] font-medium text-slate-400 tracking-widest uppercase">
-            Built for 1099 Professionals • Powered by Cloudflare D1
-        </p>
-    </footer>
 
     <script>
         const API_URL = 'https://income.gemtaxes.com'; 
-        let myChart; 
-        let currentStep = 0;
+        let interviewStep = 0;
+        let userData = { name: '', w2: 0, n1099: 0, expenses: 0 };
 
-        // 1. TOUR DEFINITION
-        const tourSteps = [
-            { id: 'w2-group', text: "Foundation: Your 2026 W2. The standard deduction is $16,100—meaning your first $1,341/month is tax-free!" },
-            { id: '1099-group', text: "Profit Strategy: 1099 Income. Subtract mileage (72.5¢/mi) and business expenses before entering here!" },
-            { id: 'irs-setup-btn', text: "Safety Move: Create your IRS account first. It links payments to your ID so they never get lost." },
-            { id: 'legal-center', text: "Knowledge: Use the Learning Center to find 2026 deductions and read our legal disclaimers." }
+        const questions = [
+            { key: 'w2', q: "Nice to meet you! Did you have a W2 job this year? What was your total salary?", type: 'number' },
+            { key: 'n1099', q: "Got it. Now, what was your total 1099/Freelance income?", type: 'number' },
+            { key: 'expenses', q: "Maximizer Check: How much did you spend on gear, cleaners, or repairs for work?", type: 'number' },
+            { key: 'finish', q: "One second while I crunch the 2026 tax brackets... ready?", type: 'none' }
         ];
 
-        // 2. CORE LOGIC
-        async function init() {
-            await loadHistory();
-            await loadQuarterly();
-            startTour();
+        // 1. CONVERSATIONAL INTERVIEW
+        function handleInterview() {
+            const input = document.getElementById('user-response');
+            
+            // Capture data from the step we just finished
+            if (interviewStep === 0) {
+                userData.name = input.value;
+            } else {
+                const prevKey = questions[interviewStep - 1].key;
+                userData[prevKey] = parseFloat(input.value) || 0;
+            }
+
+            // Move to the next question
+            if (interviewStep < questions.length) {
+                const step = questions[interviewStep];
+                document.getElementById('question-text').innerText = `"${step.q}"`;
+                
+                if (step.key === 'finish') {
+                    input.classList.add('hidden');
+                    document.querySelector('#input-area button').innerText = "Show My Results →";
+                } else {
+                    input.value = "";
+                    input.type = step.type;
+                    input.placeholder = step.type === 'number' ? "0.00" : "Type here...";
+                    input.focus();
+                }
+                interviewStep++;
+            } else {
+                finishInterview();
+            }
         }
 
+        function finishInterview() {
+            // Push interview data to the dashboard
+            document.getElementById('w2').value = userData.w2;
+            document.getElementById('1099').value = Math.max(0, userData.n1099 - userData.expenses);
+            
+            // Trigger calculation
+            calculateAndSave();
+            
+            // UI Transition
+            document.getElementById('interview-card').classList.add('hidden');
+            document.getElementById('main-dashboard').classList.remove('hidden');
+            
+            celebratePayment();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // 2. TAX ENGINE
         async function calculateAndSave() {
             const w2 = parseFloat(document.getElementById('w2').value) || 0;
             const n1099 = parseFloat(document.getElementById('1099').value) || 0;
@@ -229,167 +172,30 @@
                     body: JSON.stringify({ w2Income: w2, net1099Income: n1099, filingStatus: 'single' })
                 });
                 const data = await response.json();
-                updateMilestone(w2 + n1099);
                 updateUI(data, w2, n1099);
-                await loadHistory(); 
-                await loadQuarterly();
-            } catch (error) { console.error("API Error:", error); }
+            } catch (error) { console.error("API connection failed."); }
         }
 
         function updateUI(data, w2, n1099) {
             const seTax = data.summary.selfEmploymentTax;
             const fedTax = data.summary.federalIncomeTax;
-            const totalTax = seTax + fedTax;
-            const takeHome = (w2 + n1099) - totalTax;
-
-            document.getElementById('totalTax').innerText = '$' + totalTax.toLocaleString();
-            document.getElementById('seTax').innerText = '$' + seTax.toLocaleString();
-            document.getElementById('fedTax').innerText = '$' + fedTax.toLocaleString();
-            document.getElementById('takeHome').innerText = '$' + takeHome.toLocaleString();
-            updateChart(seTax, fedTax, takeHome);
+            const total = seTax + fedTax;
+            
+            document.getElementById('totalTax').innerText = '$' + total.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+            document.getElementById('seTax').innerText = '$' + seTax.toLocaleString(undefined, {minimumFractionDigits: 2});
+            document.getElementById('fedTax').innerText = '$' + fedTax.toLocaleString(undefined, {minimumFractionDigits: 2});
+            document.getElementById('takeHome').innerText = '$' + ((w2 + n1099) - total).toLocaleString(undefined, {minimumFractionDigits: 2});
+            document.getElementById('q1-total').innerText = '$' + (total / 4).toLocaleString(undefined, {minimumFractionDigits: 2});
         }
 
-        function updateMilestone(totalIncome) {
-            const cap = 184500; // 2026 SS Cap
-            const noteElement = document.getElementById('milestone-note');
-            if (totalIncome > cap) {
-                const savings = ((totalIncome - cap) * 0.062).toLocaleString(undefined, {minimumFractionDigits: 2});
-                noteElement.innerText = `🎉 SS CAP REACHED! Saved $${savings} on income above the limit.`;
-                noteElement.classList.remove('hidden');
-            } else { noteElement.classList.add('hidden'); }
-        }
-
-        // 3. UI HELPERS & CELEBRATION
         function celebratePayment() {
-            confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 }, colors: ['#6366f1', '#22c55e', '#ffffff'] });
-        }
-
-        function updateChart(seTax, fedTax, takeHome) {
-            const ctx = document.getElementById('taxChart').getContext('2d');
-            if (myChart) { myChart.destroy(); }
-            myChart = new Chart(ctx, {
-                type: 'doughnut',
-                data: {
-                    labels: ['SE Tax', 'Federal Tax', 'Take Home'],
-                    datasets: [{
-                        data: [seTax, fedTax, takeHome],
-                        backgroundColor: ['#6366f1', '#4338ca', '#22c55e'],
-                        borderWidth: 0,
-                    }]
-                },
-                options: { plugins: { legend: { display: false } }, cutout: '78%' }
-            });
-        }
-
-        async function loadHistory() {
-            try {
-                const res = await fetch(`${API_URL}/history`);
-                const items = await res.json();
-                document.getElementById('historyBody').innerHTML = items.map(item => `
-                    <tr class="hover:bg-slate-50 transition-colors">
-                        <td class="px-6 py-4 text-slate-400 text-[10px] uppercase">${new Date(item.created_at).toLocaleDateString()}</td>
-                        <td class="px-6 py-4 font-semibold">$${item.w2_income.toLocaleString()}</td>
-                        <td class="px-6 py-4 font-semibold text-indigo-600">$${item.net_1099_income.toLocaleString()}</td>
-                        <td class="px-6 py-4 text-right font-black">$${item.tax_owed.toLocaleString()}</td>
-                    </tr>
-                `).join('');
-            } catch(e) { console.error("History fail"); }
-        }
-
-        async function loadQuarterly() {
-            try {
-                const res = await fetch(`${API_URL}/quarterly-summary`);
-                const data = await res.json();
-                document.getElementById('q1-total').innerText = '$' + (data.totalQ1Tax || 0).toLocaleString();
-                document.getElementById('days-count').innerText = data.daysLeft || 0;
-                if (data.daysLeft <= 14) document.getElementById('day-badge').classList.replace('bg-indigo-600', 'bg-red-500');
-            } catch(e) { console.error("Summary fail"); }
-        }
-
-        // 4. ROVER TOUR LOGIC
-        function startTour() {
-            if (!localStorage.getItem('gemtax_tour_legal')) {
-                moveRover();
-                document.addEventListener('click', nextStep);
-            }
-        }
-
-        function nextStep() {
-            currentStep++;
-            if (currentStep < tourSteps.length) { moveRover(); } 
-            else {
-                document.getElementById('ai-rover').classList.add('hidden');
-                document.querySelectorAll('.rover-active').forEach(el => el.classList.remove('rover-active'));
-                localStorage.setItem('gemtax_tour_legal', 'true');
-                document.removeEventListener('click', nextStep);
-            }
-        }
-
-        function moveRover() {
-            const step = tourSteps[currentStep];
-            const target = document.getElementById(step.id);
-            const rover = document.getElementById('ai-rover');
-            const text = document.getElementById('rover-text');
-            document.querySelectorAll('.rover-active').forEach(el => el.classList.remove('rover-active'));
-            if (target && rover) {
-                target.classList.add('rover-active');
-                const rect = target.getBoundingClientRect();
-                rover.classList.remove('hidden');
-                rover.style.top = `${rect.top + window.scrollY - rover.offsetHeight - 25}px`;
-                rover.style.left = `${rect.left}px`;
-                text.innerText = step.text;
-            }
+            confetti({ particleCount: 200, spread: 80, origin: { y: 0.6 }, colors: ['#6366f1', '#22c55e', '#ffffff'] });
         }
 
         function downloadPDF() {
             const element = document.getElementById('pdf-area');
             html2pdf().set({ margin: 0.5, filename: 'Gemtax-2026.pdf', html2canvas: { scale: 3 }, jsPDF: { unit: 'in', format: 'letter' }}).from(element).save();
         }
-let interviewStep = 0;
-let userData = { name: '', w2: 0, n1099: 0, expenses: 0 };
-
-const questions = [
-    { key: 'name', q: "Got it. And what was your total W2 salary this year?", type: 'number' },
-    { key: 'w2', q: "Perfect. Now, how much did you make in 1099/Gig profit?", type: 'number' },
-    { key: 'n1099', q: "Almost done! Did you spend money on cleaners, repairs, or software?", type: 'number' },
-    { key: 'finish', q: "Analyzing your strategy... give me one second! ⏳", type: 'none' }
-];
-
-function handleInterview() {
-    const input = document.getElementById('user-response');
-    const currentQuestion = questions[interviewStep];
-
-    // Store the data
-    if (interviewStep === 0) userData.name = input.value;
-    else userData[questions[interviewStep-1].key] = parseFloat(input.value) || 0;
-
-    // Move to next step
-    if (interviewStep < questions.length) {
-        document.getElementById('question-text').innerText = `"${questions[interviewStep].q}"`;
-        input.value = "";
-        input.type = questions[interviewStep].type;
-        interviewStep++;
-    } else {
-        finishInterview();
-    }
-}
-
-function finishInterview() {
-    // 1. Calculate the final tax
-    calculateAndSave(); 
-    // 2. Celebration
-    celebratePayment();
-    // 3. Show Success Page
-    document.getElementById('interview-card').innerHTML = `
-        <div class="text-center py-10">
-            <div class="w-20 h-20 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-6 text-3xl">✓</div>
-            <h2 class="text-2xl font-black text-slate-800">Ready to File!</h2>
-            <p class="text-sm text-slate-400 mt-2">Your 2026 Strategy is optimized. Download your PDF and head to the IRS portal below.</p>
-        </div>
-    `;
-}
-        
-        init();
     </script>
 </body>
 </html>
