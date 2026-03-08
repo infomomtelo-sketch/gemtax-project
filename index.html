@@ -345,7 +345,50 @@
             const element = document.getElementById('pdf-area');
             html2pdf().set({ margin: 0.5, filename: 'Gemtax-2026.pdf', html2canvas: { scale: 3 }, jsPDF: { unit: 'in', format: 'letter' }}).from(element).save();
         }
+let interviewStep = 0;
+let userData = { name: '', w2: 0, n1099: 0, expenses: 0 };
 
+const questions = [
+    { key: 'name', q: "Got it. And what was your total W2 salary this year?", type: 'number' },
+    { key: 'w2', q: "Perfect. Now, how much did you make in 1099/Gig profit?", type: 'number' },
+    { key: 'n1099', q: "Almost done! Did you spend money on cleaners, repairs, or software?", type: 'number' },
+    { key: 'finish', q: "Analyzing your strategy... give me one second! ⏳", type: 'none' }
+];
+
+function handleInterview() {
+    const input = document.getElementById('user-response');
+    const currentQuestion = questions[interviewStep];
+
+    // Store the data
+    if (interviewStep === 0) userData.name = input.value;
+    else userData[questions[interviewStep-1].key] = parseFloat(input.value) || 0;
+
+    // Move to next step
+    if (interviewStep < questions.length) {
+        document.getElementById('question-text').innerText = `"${questions[interviewStep].q}"`;
+        input.value = "";
+        input.type = questions[interviewStep].type;
+        interviewStep++;
+    } else {
+        finishInterview();
+    }
+}
+
+function finishInterview() {
+    // 1. Calculate the final tax
+    calculateAndSave(); 
+    // 2. Celebration
+    celebratePayment();
+    // 3. Show Success Page
+    document.getElementById('interview-card').innerHTML = `
+        <div class="text-center py-10">
+            <div class="w-20 h-20 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-6 text-3xl">✓</div>
+            <h2 class="text-2xl font-black text-slate-800">Ready to File!</h2>
+            <p class="text-sm text-slate-400 mt-2">Your 2026 Strategy is optimized. Download your PDF and head to the IRS portal below.</p>
+        </div>
+    `;
+}
+        
         init();
     </script>
 </body>
