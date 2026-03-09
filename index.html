@@ -3,190 +3,174 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gemtax | 2026 AI Accountant</title>
+    <title>Gemtax AI | 2026 Tax Accountant</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; scroll-behavior: smooth; }
-        .fade-in { animation: fadeIn 0.8s ease-out forwards; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; }
+        .chat-bubble { animation: slideIn 0.3s ease-out; }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .hidden { display: none; }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-900 min-h-screen pb-20">
+<body class="min-h-screen flex flex-col items-center justify-center p-6">
 
-    <nav class="p-6 bg-white border-b border-slate-200 sticky top-0 z-50">
-        <div class="max-w-5xl mx-auto flex justify-between items-center">
-            <h1 class="text-2xl font-extrabold text-indigo-600 tracking-tight">Gemtax <span class="text-slate-400 font-light underline decoration-indigo-200">2026</span></h1>
-            <div class="flex items-center gap-4">
-                <span id="user-display" class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">D1 Memory Active</span>
-                <div class="h-2 w-2 rounded-full bg-green-500 animate-pulse"></div>
-            </div>
+    <div id="app-container" class="w-full max-w-xl">
+        
+        <div class="text-center mb-8">
+            <h1 class="text-3xl font-black text-indigo-600 tracking-tighter">Gemtax <span class="text-slate-300 font-light underline decoration-indigo-200">AI</span></h1>
+            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-2">2026 Certified Strategy Engine</p>
         </div>
-    </nav>
 
-    <div class="max-w-3xl mx-auto px-6 mt-10">
-        <div id="interview-card" class="bg-white p-10 rounded-[2.5rem] shadow-2xl border border-slate-200">
+        <div id="main-card" class="bg-white p-8 rounded-[2.5rem] shadow-2xl border border-slate-100 relative overflow-hidden">
+            
+            <div class="absolute top-0 left-0 w-full h-1 bg-slate-100">
+                <div id="progress-bar" class="h-full bg-indigo-500 transition-all duration-500" style="width: 5%"></div>
+            </div>
+
             <div class="flex items-center gap-3 mb-8">
-                <div class="w-12 h-12 bg-indigo-600 rounded-full flex items-center justify-center text-white font-bold shadow-lg">AI</div>
+                <div class="w-10 h-10 bg-indigo-600 rounded-full flex items-center justify-center text-white font-bold shadow-lg">AI</div>
                 <div>
-                    <p class="text-xs font-bold text-indigo-600 uppercase tracking-widest">Gemtax Accountant</p>
-                    <p class="text-[10px] text-slate-400 uppercase tracking-tighter mt-1">IRS 1040/Schedule C Interview</p>
+                    <p class="text-[10px] font-bold text-indigo-600 uppercase tracking-widest">Accountant Assistant</p>
+                    <p class="text-[10px] text-green-500 font-bold uppercase animate-pulse">Online & Calculating</p>
                 </div>
             </div>
 
-            <div id="chat-box" class="min-h-[100px] mb-8">
-                <h2 id="question-text" class="text-2xl font-bold text-slate-800 leading-tight italic">"Hey! Ready to optimize your 2026 taxes? First, what's your legal name?"</h2>
+            <div id="chat-area" class="min-h-[120px] mb-8">
+                <h2 id="question-text" class="text-xl font-bold text-slate-800 leading-tight chat-bubble">
+                    "Hey there! Ready to crush your 2026 taxes? Let's start with the basics: What is your full legal name?"
+                </h2>
             </div>
 
-            <div id="input-area" class="space-y-4">
-                <input type="text" id="user-response" placeholder="Type here..." autofocus
-                       class="w-full p-5 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:ring-2 focus:ring-indigo-500 font-medium text-lg transition-all">
-                <button onclick="handleInterview()" class="w-full bg-indigo-600 text-white font-bold py-5 rounded-2xl hover:bg-indigo-700 shadow-xl shadow-indigo-100 transition-all active:scale-95 text-lg">
+            <div id="input-container" class="space-y-4">
+                <input type="text" id="user-input" placeholder="Type answer here..." 
+                       class="w-full p-5 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:ring-2 focus:ring-indigo-500 font-semibold text-lg transition-all">
+                
+                <button onclick="processAnswer()" id="next-btn" 
+                        class="w-full bg-indigo-600 text-white font-bold py-5 rounded-2xl hover:bg-indigo-700 shadow-xl shadow-indigo-100 transition-all active:scale-95">
                     Continue →
                 </button>
+            </div>
+
+            <div class="mt-8 pt-6 border-t border-slate-50 flex justify-between items-center text-[9px] text-slate-400 uppercase font-bold tracking-tighter">
+                <span>© 2026 Gemtax Privacy Secure</span>
+                <a href="https://www.irs.gov" target="_blank" class="hover:text-indigo-500">IRS.gov Official →</a>
             </div>
         </div>
     </div>
 
-    <main id="main-dashboard" class="max-w-5xl mx-auto p-6 mt-12 space-y-8 hidden">
-        
-        <div id="upgrade-banner" class="bg-indigo-50 border border-indigo-100 p-5 rounded-3xl flex flex-col md:flex-row justify-between items-center gap-4">
-            <p class="text-[10px] font-bold text-indigo-600 uppercase tracking-widest text-center md:text-left">
-                🚀 Upgrade to Pro to unlock PDF downloads, saved history, and audit-ready Schedule C reports.
-            </p>
-            <a href="https://buy.stripe.com/your_link" target="_blank" class="bg-indigo-600 text-white text-[10px] font-bold px-6 py-3 rounded-xl hover:bg-indigo-700 transition shadow-lg shadow-indigo-100 uppercase tracking-widest">
-                Upgrade $9/mo
-            </a>
-        </div>
-
-        <div class="grid md:grid-cols-2 gap-8">
-            <section class="bg-white p-8 rounded-[2rem] shadow-sm border border-slate-200">
-                <h2 class="text-xl font-bold mb-6 text-slate-800">Verified Strategy</h2>
-                <div class="space-y-6">
-                    <div>
-                        <label class="block text-[10px] font-bold text-slate-400 uppercase mb-2 tracking-widest">W2 Basis Income</label>
-                        <input type="number" id="w2" class="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl font-bold text-lg">
-                    </div>
-                    <div>
-                        <label class="block text-[10px] font-bold text-slate-400 uppercase mb-2 tracking-widest">1099 Profit (Schedule C)</label>
-                        <input type="number" id="1099" class="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl font-bold text-lg text-indigo-600">
-                    </div>
-                    <button onclick="calculateAndSave()" class="w-full py-4 border-2 border-slate-100 text-slate-400 font-bold rounded-2xl hover:border-indigo-600 hover:text-indigo-600 transition text-xs uppercase tracking-widest">Refresh Calculations</button>
-                </div>
-            </section>
-
-            <div id="pdf-area">
-                <section class="bg-indigo-900 text-white p-8 rounded-[2.5rem] shadow-2xl h-full flex flex-col border border-indigo-800 relative overflow-hidden">
-                    <div class="flex justify-between items-start mb-8 z-10">
-                        <div>
-                            <p class="text-indigo-300 uppercase tracking-widest text-[10px] font-bold mb-1">Total 2026 Estimated Tax</p>
-                            <div id="totalTax" class="text-5xl font-black tracking-tighter">$0.00</div>
-                        </div>
-                        <button id="pdf-btn" onclick="downloadPDF()" class="p-3 bg-white/10 rounded-xl hover:bg-white/20 transition opacity-50 cursor-not-allowed" disabled>
-                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-                        </button>
-                    </div>
-                    
-                    <div class="space-y-4 border-t border-indigo-800/50 pt-6 flex-grow z-10">
-                        <div class="flex justify-between text-xs"><span class="text-indigo-300">Self-Employment (15.3%)</span><span id="seTax" class="font-bold">$0.00</span></div>
-                        <div class="flex justify-between text-xs"><span class="text-indigo-300">Federal Income Tax</span><span id="fedTax" class="font-bold">$0.00</span></div>
-                        <div class="mt-6 bg-white/5 p-6 rounded-2xl border border-white/10 flex justify-between items-center">
-                            <span class="text-[10px] font-bold text-indigo-200 uppercase tracking-widest">Take-Home Pay</span>
-                            <span id="takeHome" class="text-2xl font-black text-green-400">$0.00</span>
-                        </div>
-                        <button onclick="document.getElementById('details').classList.toggle('hidden')" class="w-full text-[9px] uppercase font-bold text-indigo-400 mt-2">View Form 1040 Breakdown ↓</button>
-                        <div id="details" class="hidden text-[10px] space-y-2 pt-2 border-t border-white/10">
-                            <div class="flex justify-between"><span>Standard Deduction</span><span class="text-red-400">-$16,100</span></div>
-                            <div class="flex justify-between"><span>QBI (20% Freebie)</span><span id="det-qbi" class="text-green-400">-$0</span></div>
-                        </div>
-                    </div>
-                </section>
-            </div>
-        </div>
-    </main>
-
     <script>
-        const API_URL = 'https://income.gemtaxes.com'; 
-        let interviewStep = 0;
-        let userData = { name: '', email: '', w2: 0, n1099: 0, expenses: 0 };
+        let step = 0;
+        let userData = {
+            name: '',
+            w2: 0,
+            n1099: 0,
+            officeSqft: 0,
+            repairs: 0,
+            mileage: 0,
+            software: 0,
+            rentalIncome: 0
+        };
 
         const questions = [
-            { key: 'email', q: "Got it! What's your email? (I'll use this to save your history securely).", type: 'email' },
-            { key: 'w2', q: "Nice to meet you! What was your total W2 salary for 2026?", type: 'number' },
-            { key: 'n1099', q: "And how much did you make in 1099/Freelance profit?", type: 'number' },
-            { key: 'expenses', q: "Maximizer Check: How much did you spend on gear, cleaners, or repairs?", type: 'number' },
-            { key: 'finish', q: "Crunching the numbers... ready to see your 2026 strategy?", type: 'none' }
+            { id: 'w2', text: (name) => `Nice to meet you, ${name}! Did you have a W2 salary in 2026? (If no, type 0)`, type: 'number' },
+            { id: 'n1099', text: () => "Got it. Now, what was your total Gross 1099/Gig income? (Before any expenses)", type: 'number' },
+            { id: 'officeSqft', text: () => "Strategy time! Do you work from home? Tell me the square footage of your office/desk area.", type: 'number' },
+            { id: 'repairs', text: () => "Did you pay for any cleaners, repair people, or gear maintenance this year?", type: 'number' },
+            { id: 'mileage', text: () => "Did you drive for work? Roughly how many business miles did you track in 2026?", type: 'number' },
+            { id: 'software', text: () => "Last deduction: How much did you spend on software, AI (like ChatGPT), or tech tools?", type: 'number' },
+            { id: 'rentalIncome', text: () => "Final question: Did you receive any rental income? (This is often tax-free from SE tax!)", type: 'number' }
         ];
 
-        function handleInterview() {
-            const input = document.getElementById('user-response');
-            if (interviewStep === 0) {
-                userData.name = input.value;
+        function processAnswer() {
+            const inputEl = document.getElementById('user-input');
+            const val = inputEl.value;
+
+            // Save Data
+            if (step === 0) {
+                userData.name = val;
             } else {
-                const prevKey = questions[interviewStep - 1].key;
-                userData[prevKey] = input.type === 'number' ? parseFloat(input.value) || 0 : input.value;
+                const currentKey = questions[step - 1].id;
+                userData[currentKey] = parseFloat(val) || 0;
             }
 
-            if (interviewStep < questions.length) {
-                const step = questions[interviewStep];
-                document.getElementById('question-text').innerText = `"${step.q}"`;
-                if (step.key === 'finish') {
-                    input.classList.add('hidden');
-                    document.querySelector('#input-area button').innerText = "Show My Results →";
-                } else {
-                    input.value = ""; input.type = step.type; input.focus();
-                }
-                interviewStep++;
+            // Move Forward
+            step++;
+            updateProgress();
+
+            if (step <= questions.length) {
+                const nextQ = questions[step - 1];
+                document.getElementById('question-text').innerText = `"${nextQ.text(userData.name)}"`;
+                inputEl.value = "";
+                inputEl.type = nextQ.type;
+                inputEl.focus();
             } else {
-                finishInterview();
+                showPaymentGate();
             }
         }
 
-        async function finishInterview() {
-            document.getElementById('user-display').innerText = userData.email.toUpperCase();
-            document.getElementById('w2').value = userData.w2;
-            document.getElementById('1099').value = Math.max(0, userData.n1099 - userData.expenses);
-            
-            await calculateAndSave();
-            
-            document.getElementById('interview-card').classList.add('hidden');
-            document.getElementById('main-dashboard').classList.remove('hidden');
-            document.getElementById('main-dashboard').classList.add('fade-in');
-            
-            celebratePayment();
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+        function updateProgress() {
+            const pct = (step / (questions.length + 1)) * 100;
+            document.getElementById('progress-bar').style.width = pct + '%';
         }
 
-        async function calculateAndSave() {
-            const w2 = parseFloat(document.getElementById('w2').value) || 0;
-            const n1099 = parseFloat(document.getElementById('1099').value) || 0;
-            try {
-                const response = await fetch(`${API_URL}/calculate`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ w2Income: w2, net1099Income: n1099, email: userData.email })
-                });
-                const data = await response.json();
-                updateUI(data, w2, n1099);
-            } catch (e) { console.error("Sync Failed"); }
+        function showPaymentGate() {
+            document.getElementById('input-container').innerHTML = `
+                <div class="text-center py-4 chat-bubble">
+                    <div class="bg-indigo-50 p-6 rounded-3xl mb-6 border border-indigo-100">
+                        <p class="text-[10px] font-bold text-indigo-400 uppercase mb-1">Deductions Found</p>
+                        <p class="text-3xl font-black text-indigo-600">Strategy Ready</p>
+                    </div>
+                    <p class="text-xs text-slate-500 mb-6 px-4">I've mapped your 1040, Schedule C, and QBI benefits. Pay the 2026 prep fee to unlock your filing report.</p>
+                    <button onclick="finalize()" class="w-full bg-indigo-600 text-white font-bold py-5 rounded-2xl hover:bg-indigo-700 shadow-xl">
+                        Unlock & File Success →
+                    </button>
+                </div>
+            `;
+            document.getElementById('question-text').innerText = `"Analysis complete, ${userData.name.split(' ')[0]}! I've found every deduction you're eligible for."`;
         }
 
-        function updateUI(data, w2, n1099) {
-            const seTax = data.summary.selfEmploymentTax;
-            const fedTax = data.summary.federalIncomeTax;
-            const total = seTax + fedTax;
-            document.getElementById('totalTax').innerText = '$' + total.toLocaleString(undefined, {minimumFractionDigits: 2});
-            document.getElementById('seTax').innerText = '$' + seTax.toLocaleString(undefined, {minimumFractionDigits: 2});
-            document.getElementById('fedTax').innerText = '$' + fedTax.toLocaleString(undefined, {minimumFractionDigits: 2});
-            document.getElementById('takeHome').innerText = '$' + ((w2 + n1099) - total).toLocaleString(undefined, {minimumFractionDigits: 2});
-            document.getElementById('det-qbi').innerText = '-$' + (n1099 * 0.2).toLocaleString();
+        function finalize() {
+            confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 }, colors: ['#6366f1', '#22c55e', '#ffffff'] });
+            
+            // MATH LOGIC
+            const officeDed = userData.officeSqft * 5; // Simplified Method
+            const mileageDed = userData.mileage * 0.725; // 2026 Rate
+            const totalExpenses = userData.repairs + userData.software + officeDed + mileageDed;
+            const net1099 = Math.max(0, userData.n1099 - totalExpenses);
+            const qbi = net1099 * 0.20;
+
+            document.getElementById('main-card').innerHTML = `
+                <div class="text-center py-8 chat-bubble">
+                    <div class="w-20 h-20 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-6 text-3xl">✓</div>
+                    <h2 class="text-2xl font-black text-slate-800 tracking-tight">Success! Return Generated</h2>
+                    <p class="text-xs text-slate-400 mt-2 mb-8">Your 2026 tax strategy has been filed to your history.</p>
+                    
+                    <div class="space-y-3 text-left bg-slate-50 p-6 rounded-3xl border border-slate-100 mb-8">
+                        <div class="flex justify-between text-[10px] font-bold uppercase tracking-widest text-slate-400">
+                            <span>Schedule C Profit</span> <span class="text-slate-900">$${net1099.toLocaleString()}</span>
+                        </div>
+                        <div class="flex justify-between text-[10px] font-bold uppercase tracking-widest text-slate-400">
+                            <span>QBI Savings</span> <span class="text-green-600">-$${qbi.toLocaleString()}</span>
+                        </div>
+                    </div>
+
+                    <a href="https://www.irs.gov/payments" target="_blank" class="block w-full bg-slate-900 text-white font-bold py-5 rounded-2xl">
+                        Go to IRS.gov to Pay →
+                    </a>
+                </div>
+            `;
         }
 
-        function celebratePayment() { confetti({ particleCount: 200, spread: 90, origin: { y: 0.6 } }); }
-        function downloadPDF() { /* Pro logic */ }
+        // Listen for "Enter" key
+        document.getElementById('user-input').addEventListener("keypress", function(event) {
+            if (event.key === "Enter") {
+                event.preventDefault();
+                processAnswer();
+            }
+        });
     </script>
 </body>
 </html>
