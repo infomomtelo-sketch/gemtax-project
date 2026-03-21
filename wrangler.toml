@@ -1,15 +1,12 @@
-name = "gemtax-project"
-main = "src/index.ts"
-compatibility_date = "2026-03-06"
+name = "gemtaxes-2026"
+main = "src/index.js"
+compatibility_date = "2026-03-21"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "gemtax_progress"
+database_id = "your-unique-id"
 
 [vars]
-ENVIRONMENT = "production"
-
-# Future D1 Database setup
-[[d1_databases]]
-binding = "DB" # This is how we access the DB in our code
-database_name = "gemtax_db"
-database_id = "14327a7f-75c7-47ac-8b95-fba7a83f1d23" # Cloudflare will assign this later
-[[routes]]
-pattern = "income.gemtaxes.com"
-custom_domain = true
+IRS_YEAR = "2025"
+OBBBA_OVERTIME_LIMIT = "12500"
