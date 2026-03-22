@@ -3,174 +3,67 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gemtax AI | 2026 Tax Accountant</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
-    <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; }
-        .chat-bubble { animation: slideIn 0.3s ease-out; }
-        @keyframes slideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .hidden { display: none; }
-    </style>
+    <title>Gemtaxes | 2026 AI Tax Pilot</title>
+    <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
 </head>
-<body class="min-h-screen flex flex-col items-center justify-center p-6">
-
-    <div id="app-container" class="w-full max-w-xl">
-        
-        <div class="text-center mb-8">
-            <h1 class="text-3xl font-black text-indigo-600 tracking-tighter">Gemtax <span class="text-slate-300 font-light underline decoration-indigo-200">AI</span></h1>
-            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-2">2026 Certified Strategy Engine</p>
+<body class="bg-slate-50 text-slate-900">
+    <nav class="sticky top-0 bg-white border-b border-slate-200 px-6 py-4 flex justify-between items-center shadow-sm">
+        <div class="font-bold text-2xl text-indigo-600">Gemtaxes.com</div>
+        <div class="flex gap-4 items-center">
+            <span class="text-sm font-medium">Refund: <span id="refund-val" class="text-green-600 font-bold">$0.00</span></span>
+            <select id="lang-select" class="bg-slate-100 rounded px-2 py-1 text-sm border-none">
+                <option value="en">English</option>
+                <option value="pa">ਪੰਜਾਬੀ</option>
+            </select>
         </div>
+    </nav>
 
-        <div id="main-card" class="bg-white p-8 rounded-[2.5rem] shadow-2xl border border-slate-100 relative overflow-hidden">
+    <main class="flex h-[calc(100vh-73px)]">
+        <section class="w-full md:w-1/2 p-10 overflow-y-auto">
+            <h1 id="headline" class="text-4xl font-black mb-4">Maximize your 2026 Refund.</h1>
+            <p class="text-slate-500 mb-8 italic">"I worked 200 hours of overtime and bought a new Ford truck."</p>
             
-            <div class="absolute top-0 left-0 w-full h-1 bg-slate-100">
-                <div id="progress-bar" class="h-full bg-indigo-500 transition-all duration-500" style="width: 5%"></div>
-            </div>
+            <textarea id="user-input" class="w-full h-40 p-4 rounded-2xl border-2 border-slate-200 focus:border-indigo-500 outline-none transition-all shadow-inner" placeholder="Type your 2025 work story here..."></textarea>
+            
+            <button onclick="analyzeTax()" class="mt-4 w-full bg-indigo-600 text-white font-bold py-4 rounded-xl hover:bg-indigo-700 shadow-lg transition-transform active:scale-95">
+                Calculate Savings
+            </button>
+        </section>
 
-            <div class="flex items-center gap-3 mb-8">
-                <div class="w-10 h-10 bg-indigo-600 rounded-full flex items-center justify-center text-white font-bold shadow-lg">AI</div>
-                <div>
-                    <p class="text-[10px] font-bold text-indigo-600 uppercase tracking-widest">Accountant Assistant</p>
-                    <p class="text-[10px] text-green-500 font-bold uppercase animate-pulse">Online & Calculating</p>
+        <section id="form-cabinet" class="hidden md:block w-1/2 bg-white border-l p-10 opacity-30 grayscale blur-[1px] transition-all duration-1000">
+            <div class="border-2 border-slate-800 p-6 rounded shadow-lg max-w-md mx-auto">
+                <div class="border-b-4 border-black font-bold text-xl mb-4">Form 1040 (2025)</div>
+                <div class="space-y-6">
+                    <div><span class="text-xs font-bold">Line 1z (Total Income):</span> <div id="form-income" class="border-b border-black h-6"></div></div>
+                    <div><span class="text-xs font-bold">Line 13 (OBBB Act Deductions):</span> <div id="form-deduct" class="border-b border-black h-6 text-indigo-600 font-bold"></div></div>
                 </div>
             </div>
-
-            <div id="chat-area" class="min-h-[120px] mb-8">
-                <h2 id="question-text" class="text-xl font-bold text-slate-800 leading-tight chat-bubble">
-                    "Hey there! Ready to crush your 2026 taxes? Let's start with the basics: What is your full legal name?"
-                </h2>
-            </div>
-
-            <div id="input-container" class="space-y-4">
-                <input type="text" id="user-input" placeholder="Type answer here..." 
-                       class="w-full p-5 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:ring-2 focus:ring-indigo-500 font-semibold text-lg transition-all">
-                
-                <button onclick="processAnswer()" id="next-btn" 
-                        class="w-full bg-indigo-600 text-white font-bold py-5 rounded-2xl hover:bg-indigo-700 shadow-xl shadow-indigo-100 transition-all active:scale-95">
-                    Continue →
-                </button>
-            </div>
-
-            <div class="mt-8 pt-6 border-t border-slate-50 flex justify-between items-center text-[9px] text-slate-400 uppercase font-bold tracking-tighter">
-                <span>© 2026 Gemtax Privacy Secure</span>
-                <a href="https://www.irs.gov" target="_blank" class="hover:text-indigo-500">IRS.gov Official →</a>
-            </div>
-        </div>
-    </div>
+        </section>
+    </main>
 
     <script>
-        let step = 0;
-        let userData = {
-            name: '',
-            w2: 0,
-            n1099: 0,
-            officeSqft: 0,
-            repairs: 0,
-            mileage: 0,
-            software: 0,
-            rentalIncome: 0
-        };
-
-        const questions = [
-            { id: 'w2', text: (name) => `Nice to meet you, ${name}! Did you have a W2 salary in 2026? (If no, type 0)`, type: 'number' },
-            { id: 'n1099', text: () => "Got it. Now, what was your total Gross 1099/Gig income? (Before any expenses)", type: 'number' },
-            { id: 'officeSqft', text: () => "Strategy time! Do you work from home? Tell me the square footage of your office/desk area.", type: 'number' },
-            { id: 'repairs', text: () => "Did you pay for any cleaners, repair people, or gear maintenance this year?", type: 'number' },
-            { id: 'mileage', text: () => "Did you drive for work? Roughly how many business miles did you track in 2026?", type: 'number' },
-            { id: 'software', text: () => "Last deduction: How much did you spend on software, AI (like ChatGPT), or tech tools?", type: 'number' },
-            { id: 'rentalIncome', text: () => "Final question: Did you receive any rental income? (This is often tax-free from SE tax!)", type: 'number' }
-        ];
-
-        function processAnswer() {
-            const inputEl = document.getElementById('user-input');
-            const val = inputEl.value;
-
-            // Save Data
-            if (step === 0) {
-                userData.name = val;
-            } else {
-                const currentKey = questions[step - 1].id;
-                userData[currentKey] = parseFloat(val) || 0;
-            }
-
-            // Move Forward
-            step++;
-            updateProgress();
-
-            if (step <= questions.length) {
-                const nextQ = questions[step - 1];
-                document.getElementById('question-text').innerText = `"${nextQ.text(userData.name)}"`;
-                inputEl.value = "";
-                inputEl.type = nextQ.type;
-                inputEl.focus();
-            } else {
-                showPaymentGate();
-            }
-        }
-
-        function updateProgress() {
-            const pct = (step / (questions.length + 1)) * 100;
-            document.getElementById('progress-bar').style.width = pct + '%';
-        }
-
-        function showPaymentGate() {
-            document.getElementById('input-container').innerHTML = `
-                <div class="text-center py-4 chat-bubble">
-                    <div class="bg-indigo-50 p-6 rounded-3xl mb-6 border border-indigo-100">
-                        <p class="text-[10px] font-bold text-indigo-400 uppercase mb-1">Deductions Found</p>
-                        <p class="text-3xl font-black text-indigo-600">Strategy Ready</p>
-                    </div>
-                    <p class="text-xs text-slate-500 mb-6 px-4">I've mapped your 1040, Schedule C, and QBI benefits. Pay the 2026 prep fee to unlock your filing report.</p>
-                    <button onclick="finalize()" class="w-full bg-indigo-600 text-white font-bold py-5 rounded-2xl hover:bg-indigo-700 shadow-xl">
-                        Unlock & File Success →
-                    </button>
-                </div>
-            `;
-            document.getElementById('question-text').innerText = `"Analysis complete, ${userData.name.split(' ')[0]}! I've found every deduction you're eligible for."`;
-        }
-
-        function finalize() {
-            confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 }, colors: ['#6366f1', '#22c55e', '#ffffff'] });
+        async function analyzeTax() {
+            const btn = document.querySelector('button');
+            btn.innerText = "Analyzing...";
             
-            // MATH LOGIC
-            const officeDed = userData.officeSqft * 5; // Simplified Method
-            const mileageDed = userData.mileage * 0.725; // 2026 Rate
-            const totalExpenses = userData.repairs + userData.software + officeDed + mileageDed;
-            const net1099 = Math.max(0, userData.n1099 - totalExpenses);
-            const qbi = net1099 * 0.20;
+            const response = await fetch('/api/scan', {
+                method: 'POST',
+                body: JSON.stringify({ 
+                    text: document.getElementById('user-input').value,
+                    lang: document.getElementById('lang-select').value 
+                })
+            });
+            const result = await response.json();
 
-            document.getElementById('main-card').innerHTML = `
-                <div class="text-center py-8 chat-bubble">
-                    <div class="w-20 h-20 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-6 text-3xl">✓</div>
-                    <h2 class="text-2xl font-black text-slate-800 tracking-tight">Success! Return Generated</h2>
-                    <p class="text-xs text-slate-400 mt-2 mb-8">Your 2026 tax strategy has been filed to your history.</p>
-                    
-                    <div class="space-y-3 text-left bg-slate-50 p-6 rounded-3xl border border-slate-100 mb-8">
-                        <div class="flex justify-between text-[10px] font-bold uppercase tracking-widest text-slate-400">
-                            <span>Schedule C Profit</span> <span class="text-slate-900">$${net1099.toLocaleString()}</span>
-                        </div>
-                        <div class="flex justify-between text-[10px] font-bold uppercase tracking-widest text-slate-400">
-                            <span>QBI Savings</span> <span class="text-green-600">-$${qbi.toLocaleString()}</span>
-                        </div>
-                    </div>
-
-                    <a href="https://www.irs.gov/payments" target="_blank" class="block w-full bg-slate-900 text-white font-bold py-5 rounded-2xl">
-                        Go to IRS.gov to Pay →
-                    </a>
-                </div>
-            `;
+            // UI Animations
+            document.getElementById('refund-val').innerText = `$${result.refund}`;
+            document.getElementById('form-income').innerText = `$${result.income}`;
+            document.getElementById('form-deduct').innerText = `$${result.deductions}`;
+            
+            const cabinet = document.getElementById('form-cabinet');
+            cabinet.classList.remove('opacity-30', 'grayscale', 'blur-[1px]');
+            btn.innerText = "Calculated!";
         }
-
-        // Listen for "Enter" key
-        document.getElementById('user-input').addEventListener("keypress", function(event) {
-            if (event.key === "Enter") {
-                event.preventDefault();
-                processAnswer();
-            }
-        });
     </script>
 </body>
 </html>
