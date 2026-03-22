@@ -46,6 +46,34 @@
 
     <script>
         async function analyzeTax() {
+    const btn = document.querySelector('button');
+    const input = document.getElementById('user_input').value;
+    const user_guid = localStorage.getItem('gemtax_guid') || 'guest_' + Math.random();
+    
+    btn.innerText = "Analyzing...";
+
+    try {
+        const response = await fetch('/api/scan', {
+            method: 'POST',
+            body: JSON.stringify({ userInput: input, user_guid: user_guid }) // Fixed syntax
+        });
+        const result = await response.json();
+
+        // AUTO-FILL the Form
+        document.getElementById('form-income').innerText = `$${result.data.income.toLocaleString()}`;
+        document.getElementById('form-deduction').innerText = `-$${result.data.overtime}`;
+        document.querySelector('.text-green-600').innerText = `$${result.refund}`;
+
+        // "Un-grey" the form
+        document.getElementById('form-cabinet').classList.remove('opacity-30', 'grayscale');
+        btn.innerText = "Calculated!";
+    } catch (e) {
+        btn.innerText = "Try Again";
+        console.error(e);
+    }
+}
+        
+        async function analyzeTax() {
             const btn = document.querySelector('button');
             btn.innerText = "Analyzing...";
             
