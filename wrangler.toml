@@ -1,12 +1,7 @@
 name = "gemtaxes-2026"
-main = "src/index.js"
-compatibility_date = "2026-03-21"
+pages_build_output_dir = "."
 
 [[d1_databases]]
-binding = "DB"
-database_name = "gemtax_progress"
-database_id = "your-unique-id"
-
-[vars]
-IRS_YEAR = "2025"
-OBBBA_OVERTIME_LIMIT = "12500"
+binding = "DB" 
+database_name = "gemtax_db"
+database_id = "PASTE_YOUR_DATABASE_ID_HERE"
