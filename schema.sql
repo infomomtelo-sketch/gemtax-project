@@ -1,7 +1,10 @@
-CREATE TABLE IF NOT EXISTS tax_entries (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  user_email TEXT NOT NULL,
-  w2_income REAL DEFAULT 0,
-  net_1099_income REAL DEFAULT 0,
-  created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+DROP TABLE IF EXISTS UserTaxes;
+CREATE TABLE IF NOT EXISTS UserTaxes (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_email TEXT UNIQUE,
+    language_pref TEXT DEFAULT 'en',
+    raw_story TEXT,
+    extracted_income REAL,
+    extracted_deductions REAL,
+    last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
