@@ -3,5 +3,5 @@ pages_build_output_dir = "."
 
 [[d1_databases]]
 binding = "DB" 
-database_name = "gemtax_db"
-database_id = "PASTE_YOUR_DATABASE_ID_HERE"
+database_name = "gemtaxes-2026"
+database_id = "8cd07403-7ea4-4413-9452-c72aadc6cf2c"
