@@ -47,54 +47,46 @@
     <script>
         async function analyzeTax() {
     const btn = document.querySelector('button');
-    const input = document.getElementById('user_input').value;
-    const user_guid = localStorage.getItem('gemtax_guid') || 'guest_' + Math.random();
+    const userInput = document.getElementById('user-input').value; // Match HTML id
+    const lang = document.getElementById('lang-select').value;
     
+    // UI Feedback
     btn.innerText = "Analyzing...";
+    btn.disabled = true; // Prevent double-clicks
 
     try {
         const response = await fetch('/api/scan', {
             method: 'POST',
-            body: JSON.stringify({ userInput: input, user_guid: user_guid }) // Fixed syntax
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+                text: userInput, 
+                lang: lang,
+                user_guid: localStorage.getItem('gemtax_guid') || 'guest_' + Math.random()
+            })
         });
+
+        if (!response.ok) throw new Error('API Error');
+
         const result = await response.json();
 
-        // AUTO-FILL the Form
-        document.getElementById('form-income').innerText = `$${result.data.income.toLocaleString()}`;
-        document.getElementById('form-deduction').innerText = `-$${result.data.overtime}`;
-        document.querySelector('.text-green-600').innerText = `$${result.refund}`;
+        // Match these IDs exactly to your HTML
+        document.getElementById('form-income').innerText = `$${result.income.toLocaleString()}`;
+        document.getElementById('form-deduction').innerText = `-$${result.deductions.toLocaleString()}`;
+        document.getElementById('refund-val').innerText = `$${result.refund.toLocaleString()}`;
 
-        // "Un-grey" the form
-        document.getElementById('form-cabinet').classList.remove('opacity-30', 'grayscale');
+        // Reveal the form
+        const cabinet = document.getElementById('form-cabinet');
+        cabinet.classList.remove('opacity-30', 'grayscale', 'blur-[1px]');
+        
         btn.innerText = "Calculated!";
     } catch (e) {
+        console.error("Gemtax Error:", e);
         btn.innerText = "Try Again";
-        console.error(e);
+    } finally {
+        btn.disabled = false;
     }
 }
         
-        async function analyzeTax() {
-            const btn = document.querySelector('button');
-            btn.innerText = "Analyzing...";
-            
-            const response = await fetch('/api/scan', {
-                method: 'POST',
-                body: JSON.stringify({ 
-                    text: document.getElementById('user-input').value,
-                    lang: document.getElementById('lang-select').value 
-                })
-            });
-            const result = await response.json();
-
-            // UI Animations
-            document.getElementById('refund-val').innerText = `$${result.refund}`;
-            document.getElementById('form-income').innerText = `$${result.income}`;
-            document.getElementById('form-deduct').innerText = `$${result.deductions}`;
-            
-            const cabinet = document.getElementById('form-cabinet');
-            cabinet.classList.remove('opacity-30', 'grayscale', 'blur-[1px]');
-            btn.innerText = "Calculated!";
-        }
     </script>
 </body>
 </html>
